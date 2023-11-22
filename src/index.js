@@ -6,6 +6,8 @@ import ProductsList from "./ProductsList";
 import 'bootstrap/dist/css/bootstrap.css';
 import Navbar from "./Navbar";
 import NewProduct from "./NewProduct";
+import Login from "./Login";
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,6 +17,8 @@ root.render(
             <Route path={"/products"} element={<ProductsList/>} />
             <Route path={"/products-new"} element={<NewProduct/>} />
             <Route path={"/todos"} element={<TodoList/>} />
+            <Route path={"/login"} element={<Login/>} />
+
         </Routes>
     </BrowserRouter>
 );
