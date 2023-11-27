@@ -1,8 +1,8 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import "./ProductsList.css";
 import {useGeolocation} from "react-use";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 export default function ProductsList() {
 
@@ -14,16 +14,31 @@ export default function ProductsList() {
     const [products, setProducts] = useState([]);
     const [inputValue, setInputValue] = useState();
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    const isLoggedIn = !!localStorage.getItem("accessToken")
+    let isAdmin = false;
+    if(localStorage.getItem("user")){
+        const user = JSON.parse(localStorage.getItem("user"));
+        isAdmin = user.roles?.some(role => role.name === "ADMIN");
+    }
 
     useEffect(() => {
         getData();
     }, []);
 
     const getData = async () => {
-        setLoading(true);
-        let response = await axios.get("http://localhost:8080/products");
-        setProducts(response.data);
-        setLoading(false);
+        try {
+            setLoading(true);
+            let response = await axios.get("http://localhost:8080/products");
+            setProducts(response.data);
+            setError('')
+        } catch (error){
+            console.log("Product fetch error", error)
+            setError(error.response.data.message)
+        } finally {
+            setLoading(false);
+        }
     }
 
     function createInitialTodos() {
@@ -38,15 +53,25 @@ export default function ProductsList() {
 
     const handleSubmit = () => {
         // nunaviguotu i naujo produkto komponenta
-        navigate("/products-new");
+        navigate("/home/products-new");
         // setTodos([...todos, inputValue]);
         // setInputValue("");
     }
 
     const handleDelete = async (uuid) => {
         setLoading(true);
-        await axios.delete(`http://localhost:8080/products/${uuid}`)
-        getData();
+        try {
+            await axios.delete(`http://localhost:8080/products/${uuid}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            })
+            getData();
+        } catch (error){
+            console.log("Product fetch error", error)
+            setLoading(false)
+            setError(error.response.data.message)
+        }
     }
 
     return (
@@ -70,6 +95,10 @@ export default function ProductsList() {
                 </div>
             </div>}
 
+            { (!loading && error) &&
+                <p className="alert alert-danger mt-2">{ error }</p>
+            }
+
             {!loading && <table className="table">
                 <thead>
                 <tr>
@@ -83,11 +112,13 @@ export default function ProductsList() {
                 <tbody>
                 {products?.map((product, index) => <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{product.name}</td>
+                    <td>
+                        {isLoggedIn ? <Link to={`/home/product-details/${product.id}`}>{product.name}</Link> : <> {product.name} </> }
+                    </td>
                     <td>{product.price}</td>
                     <td>{product.quantity}</td>
                     <td>
-                        <button className="btn btn-danger" onClick={() => handleDelete(product.id)}>Trinti</button>
+                        {isAdmin && <button className="btn btn-danger" onClick={() => handleDelete(product.id)}>Trinti</button>}
                     </td>
                 </tr>)}
                 </tbody>
@@ -110,12 +141,14 @@ export default function ProductsList() {
                 {/*</form>*/}
 
                 {/*         buvo anksciau: () => setTodos([...todos, inputValue])              */}
-                <button
-                    onClick={handleSubmit}
-                    type="button"
-                    className="btn btn-primary align-self-center">
-                    Pridėti naują užduotį
-                </button>
+                {isAdmin &&
+                    <button
+                        onClick={handleSubmit}
+                        type="button"
+                        className="btn btn-primary align-self-center">
+                        Pridėti naują užduotį
+                    </button>
+                }
                 {/*<button onClick={handleSubmit}>Pridėti naują užduotį</button>*/}
             </div>
 
