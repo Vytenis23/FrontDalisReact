@@ -1,0 +1,12 @@
+.todo-input-field {
+    padding: 8px 4px;
+    border-radius: 8px;
+    border-style: solid;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+}
