@@ -60,6 +60,10 @@ function BlogPostDetail() {
         }
     };
 
+    const handleEdit = (comment) => {
+        // Implement your edit logic here
+    };
+
     return (
         <>
             {loading && (
@@ -82,7 +86,6 @@ function BlogPostDetail() {
                             <h4>Comments:</h4>
                             {comments.length ? (
                                 <table className="table">
-                                    {/* Table header */}
                                     <tbody>
                                     {comments.map((comment, index) => (
                                         <tr key={index}>
