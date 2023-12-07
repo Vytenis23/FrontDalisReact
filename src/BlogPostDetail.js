@@ -9,8 +9,18 @@ function BlogPostDetail() {
     const [content, setContent] = useState('');
     const [author, setAuthor] = useState('');
     const [comments, setComments] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [commentSaveInit, setCommentSaveInit] = useState(false);
+
+    const [editCommentId, setEditCommentId] = useState(null);
+    const [editCommentName, setEditCommentName] = useState('');
+    const [editCommentEmail, setEditCommentEmail] = useState('');
+    const [editCommentText, setEditCommentText] = useState('');
+    const [editCommentSaveInit, setEditCommentSaveInit] = useState(false);
+
     const [fetchError, setFetchError] = useState('');
+
+    const [blogPost, setBlogPost] = useState({});
+    const [loading, setLoading] = useState(true);
 
     let isAdmin = false;
     if (localStorage.getItem("user")) {
@@ -22,10 +32,10 @@ function BlogPostDetail() {
         getBlogPostDetails(blogPostId);
     }, [blogPostId]);
 
-    const getBlogPostDetails = async (blogPostId) => {
+    const getBlogPostDetails = async (id) => {
         try {
             setLoading(true);
-            let response = await axios.get(`http://localhost:8080/blogposts/${blogPostId}`, {
+            let response = await axios.get(`http://localhost:8080/blogposts/${id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`
                 }
@@ -60,8 +70,60 @@ function BlogPostDetail() {
         }
     };
 
-    const handleEdit = (comment) => {
-        // Implement your edit logic here
+    const handleEdit = async (comment) => {
+        setEditCommentId(comment.id);
+        setEditCommentName(comment.name);
+        setEditCommentEmail(comment.email);
+        setEditCommentText(comment.text);
+    };
+    const handleAddComment = async () => {
+        try {
+            const newComment = {
+                name: editCommentName,
+                email: editCommentEmail,
+                text: editCommentText
+            };
+
+            await axios.post(`http://localhost:8080/comments/${blogPostId}`, newComment, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+
+            setEditCommentName('');
+            setEditCommentEmail('');
+            setEditCommentText('');
+            getBlogPostDetails(blogPostId);
+        } catch (error) {
+            console.log("Comment add error", error);
+            setFetchError(error.response?.data?.message || 'Error adding comment');
+        }
+    };
+
+    const handleUpdateComment = async () => {
+        try {
+            const updatedComment = {
+                id: editCommentId,
+                name: editCommentName,
+                email: editCommentEmail,
+                text: editCommentText
+            };
+
+            await axios.put(`http://localhost:8080/comments/${editCommentId}`, updatedComment, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+
+            setEditCommentId(null);
+            setEditCommentName('');
+            setEditCommentEmail('');
+            setEditCommentText('');
+            getBlogPostDetails(blogPostId);
+        } catch (error) {
+            console.log("Comment update error", error);
+            setFetchError(error.response?.data?.message || 'Error updating comment');
+        }
     };
 
     return (
@@ -87,25 +149,75 @@ function BlogPostDetail() {
                             {comments.length ? (
                                 <table className="table">
                                     <tbody>
-                                    {comments.map((comment, index) => (
-                                        <tr key={index}>
-                                            <td>{comment.text}</td>
-                                            <td>{comment.name}</td>
-                                            <td>
-                                                {!isAdmin && (
-                                                    <button className="btn btn-info" onClick={() => handleEdit(comment)}>Edit</button>
-                                                )}
-                                                &nbsp;&nbsp;&nbsp;&nbsp;
-                                                <button className="btn btn-danger" onClick={() => handleDelete(comment.id)}>Delete</button>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                        {comments.map((comment, index) => (
+                                            <tr key={index}>
+                                                <td>{comment.text}</td>
+                                                <td>{comment.name}</td>
+                                                <td>
+                                                    {!isAdmin && (
+                                                        <button className="btn btn-info" onClick={() => handleEdit(comment)}>Edit</button>
+                                                    )}
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <button className="btn btn-danger" onClick={() => handleDelete(comment.id)}>Delete</button>
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             ) : (
                                 <p className="alert alert-danger">No comments on the blog post</p>
                             )}
+                            {/* Komentaro pridėjimo forma */}
+                            <div className="mt-3">
+                                <h4>Add Comment</h4>
+                                <input
+                                    type="text"
+                                    placeholder="Name"
+                                    value={editCommentName}
+                                    onChange={(e) => setEditCommentName(e.target.value)}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Email"
+                                    value={editCommentEmail}
+                                    onChange={(e) => setEditCommentEmail(e.target.value)}
+                                />
+                                <textarea
+                                    placeholder="Comment"
+                                    value={editCommentText}
+                                    onChange={(e) => setEditCommentText(e.target.value)}
+                                    className="form-control"
+                                    rows={5} // Nurodo, kiek eilučių turi būti teksto lauke
+                                ></textarea>
+                                <button className="btn btn-primary mt-2" onClick={handleAddComment}>Add Comment</button>
+                            </div>
 
+                            {/* Komentaro redagavimo forma */}
+                            {editCommentId && (
+                                <div className="mt-3">
+                                    <h4>Edit Comment</h4>
+                                    <input
+                                        type="text"
+                                        placeholder="Name"
+                                        value={editCommentName}
+                                        onChange={(e) => setEditCommentName(e.target.value)}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Email"
+                                        value={editCommentEmail}
+                                        onChange={(e) => setEditCommentEmail(e.target.value)}
+                                    />
+                                    <textarea
+                                        placeholder="Comment"
+                                        value={editCommentText}
+                                        onChange={(e) => setEditCommentText(e.target.value)}
+                                        className="form-control"
+                                        rows={5} // Nurodo, kiek eilučių turi būti teksto lauke
+                                    ></textarea>
+                                    <button className="btn btn-primary mt-2" onClick={handleUpdateComment}>Update Comment</button>
+                                </div>
+                            )}
                             {/* Remaining form elements */}
 
                             <div className="mt-3">

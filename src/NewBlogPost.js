@@ -2,10 +2,10 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function NewBlogPost() {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [author, setAuthor] = useState('');
+export default function NewBlogPost(props) {
+    const [title, setTitle] = useState();
+    const [content, setContent] = useState();
+    const [author, setAuthor] = useState();
 
     const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ export default function NewBlogPost() {
             author: author
         };
 
-         let data = await axios.post("http://localhost:8080/basketBlog", obj);
+         let data = await axios.post("http://localhost:8080/blogposts", obj);
          navigate(-1);
     };
 

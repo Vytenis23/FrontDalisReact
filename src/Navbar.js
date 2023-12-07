@@ -22,7 +22,7 @@ export default function Navbar() {
                 <div className="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul className="navbar-nav">
                         <li className="nav-item">
-                            <NavLink to="/blogposts" className="nav-link">Blog Posts</NavLink>
+                            <NavLink to="/" className="nav-link">Blog Posts</NavLink>
                         </li>
                         {isLoggedIn ?
                             <>

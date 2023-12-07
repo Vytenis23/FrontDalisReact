@@ -18,6 +18,7 @@ export default function BlogPostsList() {
         try {
             setLoading(true);
             let response = await axios.get("http://localhost:8080/blogposts");
+            console.log(response.data);
             setBlogPosts(response.data);
             setError('');
         } catch (error) {
@@ -45,9 +46,18 @@ export default function BlogPostsList() {
     };
 
     return (
+
         <div style={{ minWidth: "1024px" }}>
             <h2 className={"text-center my-4"}>Blog postų lentelė</h2>
 
+            {isLoggedIn && (
+            <div className="text-end mb-3">
+                <Link to="/home/blogpost-new" className="btn btn-primary">
+                    Pridėti naują straipsnį
+                </Link>
+            </div>
+        )}
+        
             {loading && (
                 <div className={"d-flex justify-content-center"}>
                     <div className="spinner-border text-primary" role="status">
@@ -75,7 +85,7 @@ export default function BlogPostsList() {
                         <tr key={index}>
                             <td>{index + 1}</td>
                             <td>
-                                <Link to={`/blogpost-details/${post.id}`}>{post.title}</Link>
+                                <Link to={`/home/blogpost-details/${post.id}`}>{post.title}</Link>
                             </td>
                             <td>{post.author}</td>
                             <td>
@@ -85,6 +95,7 @@ export default function BlogPostsList() {
                                         {/* Add additional actions as needed */}
                                         </span>
                                 )}
+                                
                             </td>
                         </tr>
                     ))}
