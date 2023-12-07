@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 
 function BlogPostDetail() {
-    const { id: blogPostId } = useParams();
+    const {id: blogPostId} = useParams();
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -40,7 +40,7 @@ function BlogPostDetail() {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`
                 }
             });
-            const { title, content, author, comments } = response.data;
+            const {title, content, author, comments} = response.data;
             setTitle(title);
             setContent(content);
             setAuthor(author);
@@ -149,25 +149,27 @@ function BlogPostDetail() {
                             {comments.length ? (
                                 <table className="table">
                                     <tbody>
-                                        {comments.map((comment, index) => (
-                                            <tr key={index}>
-                                                <td>{comment.text}</td>
-                                                <td>{comment.name}</td>
-                                                <td>
-                                                    {!isAdmin && (
-                                                        <button className="btn btn-info" onClick={() => handleEdit(comment)}>Edit</button>
-                                                    )}
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <button className="btn btn-danger" onClick={() => handleDelete(comment.id)}>Delete</button>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                    {comments.map((comment, index) => (
+                                        <tr key={index}>
+                                            <td>{comment.text}</td>
+                                            <td>{comment.name}</td>
+                                            <td>
+                                                {!isAdmin && (
+                                                    <button className="btn btn-info"
+                                                            onClick={() => handleEdit(comment)}>Edit</button>
+                                                )}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                                <button className="btn btn-danger"
+                                                        onClick={() => handleDelete(comment.id)}>Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
                                     </tbody>
                                 </table>
                             ) : (
                                 <p className="alert alert-danger">No comments on the blog post</p>
                             )}
-                            {/* Komentaro pridėjimo forma */}
                             <div className="mt-3">
                                 <h4>Add Comment</h4>
                                 <input
@@ -192,7 +194,6 @@ function BlogPostDetail() {
                                 <button className="btn btn-primary mt-2" onClick={handleAddComment}>Add Comment</button>
                             </div>
 
-                            {/* Komentaro redagavimo forma */}
                             {editCommentId && (
                                 <div className="mt-3">
                                     <h4>Edit Comment</h4>
@@ -213,15 +214,16 @@ function BlogPostDetail() {
                                         value={editCommentText}
                                         onChange={(e) => setEditCommentText(e.target.value)}
                                         className="form-control"
-                                        rows={5} // Nurodo, kiek eilučių turi būti teksto lauke
+                                        rows={5}
                                     ></textarea>
-                                    <button className="btn btn-primary mt-2" onClick={handleUpdateComment}>Update Comment</button>
+                                    <button className="btn btn-primary mt-2" onClick={handleUpdateComment}>Update
+                                        Comment
+                                    </button>
                                 </div>
                             )}
-                            {/* Remaining form elements */}
 
                             <div className="mt-3">
-                                <Link to={"/"} >Go back to all blog posts</Link>
+                                <Link to={"/"}>Go back to all blog posts</Link>
                             </div>
                         </>
                     )}

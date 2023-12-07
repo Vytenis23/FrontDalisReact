@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 export default function BlogPostsList() {
     const [blogPosts, setBlogPosts] = useState([]);
@@ -47,17 +47,17 @@ export default function BlogPostsList() {
 
     return (
 
-        <div style={{ minWidth: "1024px" }}>
+        <div style={{minWidth: "1024px"}}>
             <h2 className={"text-center my-4"}>Blog postų lentelė</h2>
 
             {isLoggedIn && (
-            <div className="text-end mb-3">
-                <Link to="/home/blogpost-new" className="btn btn-primary">
-                    Pridėti naują straipsnį
-                </Link>
-            </div>
-        )}
-        
+                <div className="text-end mb-3">
+                    <Link to="/home/blogpost-new" className="btn btn-primary">
+                        Pridėti naują straipsnį
+                    </Link>
+                </div>
+            )}
+
             {loading && (
                 <div className={"d-flex justify-content-center"}>
                     <div className="spinner-border text-primary" role="status">
@@ -91,19 +91,18 @@ export default function BlogPostsList() {
                             <td>
                                 {isLoggedIn && (
                                     <span>
-                                            {isAdmin && <button className="btn btn-danger" onClick={() => handleDelete(post.id)}>Trinti</button>}
-                                        {/* Add additional actions as needed */}
+                                            {isAdmin && <button className="btn btn-danger"
+                                                                onClick={() => handleDelete(post.id)}>Trinti</button>}
+
                                         </span>
                                 )}
-                                
+
                             </td>
                         </tr>
                     ))}
                     </tbody>
                 </table>
             )}
-
-            {/* Add any additional components or buttons here */}
         </div>
     );
 }
